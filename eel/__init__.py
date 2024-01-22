@@ -2,6 +2,7 @@ from builtins import range
 import traceback
 from io import open
 from typing import Union, Any, Dict, List, Set, Tuple, Optional, Callable, TYPE_CHECKING
+import PySimpleGUI as sg
 
 if TYPE_CHECKING:
     from eel.types import OptionsDictT, WebSocketT
@@ -13,7 +14,7 @@ from gevent.threading import Timer
 import gevent as gvt
 import json as jsn
 import bottle as btl
-import bottle.ext.websocket as wbs
+import bottle_websocket as wbs
 import re as rgx
 import os
 import eel.browsers as brw
@@ -408,6 +409,18 @@ def _detect_shutdown() -> None:
 
 def _websocket_close(page: str) -> None:
     global _shutdown
+
+    layout = [
+        [sg.Text("Leaving this window the default is let daemon and subprocesses running")],
+        [sg.Button("Leave Running")],
+        [sg.Button("Kill Processes")]
+    ]
+    window = sg.Window("Attention", layout)
+    event, values = window.read()
+    window.close()
+    if event == 'Leave Running':
+        print("Refusing to die")
+        return
 
     close_callback = _start_args.get('close_callback')
 
